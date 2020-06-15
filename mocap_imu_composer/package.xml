@@ -1,0 +1,19 @@
+<package format="2">
+  <name>vicon2_bridge</name>
+  <version>0.0.1</version>
+  <description>
+     This is a ROS2 driver providing data from VICON motion capture systems.
+  </description>
+  <author>David Vargas</author>
+  <maintainer email="david.vargas@urjc.es">David Vargas</maintainer>
+
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/vicon_bridge</url>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

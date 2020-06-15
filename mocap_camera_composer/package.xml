@@ -1,0 +1,28 @@
+<package format="2">
+  <name>mocap_camera_composer</name>
+  <version>0.0.1</version>
+  <description>
+     This is a ROS2 driver providing data from VICON motion capture systems.
+  </description>
+  <author>David Vargas</author>
+  <maintainer email="david.vargas@urjc.es">David Vargas</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>mocap4ros_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <build_export_depend>rclcpp</build_export_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
