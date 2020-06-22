@@ -1,7 +1,11 @@
 # mocap4ros_core
-This repository contais two packages:
+
+**To use and compile this project is obligatory to download first the [mocap4ros_msgs](https://github.com/MOCAP4ROS2-Project/mocap4ros_msgs) repository in your workspace.**
+
+This repository contais two packag es:
 - mocap_camera_composer
 - mocap_imu_composer
+
 
 # MOCAP4ROS2
 This project provides support for ROS2 integration with Vicon cameras (MOCAP systems based on vision) and Technaid TechMCS IMUs (MOCAP systems based on motion sensors).
