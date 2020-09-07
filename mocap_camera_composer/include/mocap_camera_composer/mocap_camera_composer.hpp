@@ -23,10 +23,10 @@
 #include <memory>
 #include "rclcpp/time.hpp"
 
-#include "mocap4ros_msgs/msg/marker.hpp"
-#include "mocap4ros_msgs/msg/markers.hpp"
-#include "mocap4ros_msgs/srv/vicon_calib_seg.hpp"
-#include "mocap4ros_msgs/srv/vicon_grab_pose.hpp"
+#include "mocap4ros2_msgs/msg/marker.hpp"
+#include "mocap4ros2_msgs/msg/markers.hpp"
+#include "mocap4ros2_msgs/srv/vicon_calib_seg.hpp"
+#include "mocap4ros2_msgs/srv/vicon_grab_pose.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -45,10 +45,10 @@ public:
 
 private:
   rclcpp::Node::SharedPtr camera_composer_node;
-  rclcpp::Subscription<mocap4ros_msgs::msg::Markers>::SharedPtr marker_sub_;
+  rclcpp::Subscription<mocap4ros2_msgs::msg::Markers>::SharedPtr marker_sub_;
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   // void marker_to_tf(mocap4ros_msgs::msg::Marker marker, int marker_num,
   // const rclcpp::Time& frame_time);
-  void marker_to_tf(const mocap4ros_msgs::msg::Markers::SharedPtr markers_msg);
+  void marker_to_tf(const mocap4ros2_msgs::msg::Markers::SharedPtr markers_msg);
 };
 #endif  // MOCAP_CAMERA_COMPOSER__MOCAP_CAMERA_COMPOSER_HPP_

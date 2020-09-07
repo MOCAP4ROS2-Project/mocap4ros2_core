@@ -28,7 +28,7 @@ using std::placeholders::_1;
 
 void MocapCameraComposer::start_composer()
 {
-  marker_sub_ = camera_composer_node->create_subscription<mocap4ros_msgs::msg::Markers>(
+  marker_sub_ = camera_composer_node->create_subscription<mocap4ros2_msgs::msg::Markers>(
     tracked_frame_suffix_ + "/markers",
     100,
     std::bind(
@@ -41,13 +41,13 @@ void MocapCameraComposer::start_composer()
     mocap4ros_msgs::msg::Marker marker,
     int marker_num,
     const rclcpp::Time& frame_time) */
-void MocapCameraComposer::marker_to_tf(const mocap4ros_msgs::msg::Markers::SharedPtr markers_msg)
+void MocapCameraComposer::marker_to_tf(const mocap4ros2_msgs::msg::Markers::SharedPtr markers_msg)
 {
   int marker_id = 0;
   string tracked_frame;
   std::vector<geometry_msgs::msg::TransformStamped> transforms;
 
-  for (mocap4ros_msgs::msg::Marker marker : markers_msg->markers) {
+  for (mocap4ros2_msgs::msg::Marker marker : markers_msg->markers) {
     // RCLCPP_INFO(camera_composer_node->get_logger(), "marker name %s", marker.marker_name);
     marker_id++;
     tf2::Transform transform;
