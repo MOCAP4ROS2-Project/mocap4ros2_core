@@ -1,6 +1,6 @@
-# mocap4ros_core
+# mocap4ros2_core
 
-**To use and compile this project is obligatory to download first the [mocap4ros_msgs](https://github.com/MOCAP4ROS2-Project/mocap4ros_msgs) repository in your workspace.**
+**To use and compile this project is obligatory to download first the [mocap4ros2_msgs](https://github.com/MOCAP4ROS2-Project/mocap4ros2_msgs) repository in your workspace.**
 
 This repository contais two packag es:
 - mocap_camera_composer
@@ -30,6 +30,6 @@ research and innovation programme under grant agreement no. 732287.
 ***
 
 <p align="center"> 
-<img align="center" src="https://github.com/MOCAP4ROS2-Project/mocap4ros_exp_and_resources/blob/master/resources/mocap4ros_arch.png" 
+<img align="center" src="https://github.com/MOCAP4ROS2-Project/mocap4ros2_exp_and_resources/blob/master/resources/mocap4ros_arch.png" 
     alt="mocap4ros_arch" width="100%">
 </p>
