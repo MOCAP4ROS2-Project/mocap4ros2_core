@@ -27,7 +27,10 @@ set(dependencies
 )
 
 include_directories(include)
-add_library(${PROJECT_NAME} SHARED src/mocap_camera_composer.cpp)
+
+add_library(${PROJECT_NAME}  
+src/mocap_camera_composer.cpp
+)
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
 
 install(TARGETS
@@ -35,7 +38,7 @@ install(TARGETS
   mocap_camera_composer
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION bin
 )
 
 if(BUILD_TESTING)
@@ -45,5 +48,6 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
+
 ament_export_dependencies(${dependencies})
 ament_package()
