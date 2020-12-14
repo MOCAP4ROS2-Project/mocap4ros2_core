@@ -1,6 +1,6 @@
 # mocap4ros2_core
 
-**To use and compile this project is obligatory to download first the [mocap4ros2_msgs](https://github.com/MOCAP4ROS2-Project/mocap4ros2_msgs) repository in your workspace.**
+**To use and compile this project is obligatory to download first the [mocap_msgs](https://github.com/MOCAP4ROS2-Project/mocap_msgs) repository in your workspace.**
 
 This repository contais two packag es:
 - mocap_camera_composer
