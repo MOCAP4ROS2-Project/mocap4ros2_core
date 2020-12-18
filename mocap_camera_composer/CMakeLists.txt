@@ -28,7 +28,7 @@ set(dependencies
 
 include_directories(include)
 
-add_library(${PROJECT_NAME}  
+add_library(${PROJECT_NAME}
 src/mocap_camera_composer.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
