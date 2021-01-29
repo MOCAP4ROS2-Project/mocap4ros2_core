@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, windows-latest]
       fail-fast: false
     steps:
       - name: Setup ROS 2
@@ -23,16 +23,18 @@ jobs:
       - name: build and test
         uses: lbajo/action-ros-ci@0.1.1
         with:
-          package-name: mocap_msgs
+          package-name: mocap_camera_composer mocap_control mocap_control_msgs mocap_imu_composer
           target-ros2-distro: foxy
           vcs-repo-file-url: ""
           colcon-mixin-name: coverage-gcc
           colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
-      - uses: codecov/codecov-action@v1.0.15
+      - name: Create custom repos
+        run: wget -O /tmp/all.repos https://raw.githubusercontent.com/MOCAP4ROS2-Project/mocap4ros2_core/master/mocap4ros2.repos  
+      - name: build and test
+        uses: lbajo/action-ros-ci@0.1.1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ros_ws/lcov/total_coverage.info
-          flags: unittests
-          name: codecov-umbrella
-          yml: ./codecov.yml
-          fail_ci_if_error: false
+          package-name: mocap4ros2_core
+          target-ros2-distro: foxy
+          vcs-repo-file-url: /tmp/all.repos
+          colcon-mixin-name: coverage-gcc
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
