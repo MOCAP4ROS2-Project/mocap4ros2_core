@@ -20,14 +20,6 @@ jobs:
         uses: ros-tooling/setup-ros@0.1.1
         with:
           required-ros-distributions: foxy
-      - name: build and test
-        uses: ros-tooling/action-ros-ci@0.1.1
-        with:
-          package-name: mocap_camera_composer mocap_control mocap_control_msgs mocap_imu_composer
-          target-ros2-distro: foxy
-          vcs-repo-file-url: ""
-          colcon-mixin-name: coverage-gcc
-          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
       - name: Create custom repos
         run: wget -O /tmp/all.repos https://raw.githubusercontent.com/MOCAP4ROS2-Project/mocap4ros2_core/master/mocap4ros2.repos  
       - name: build and test
