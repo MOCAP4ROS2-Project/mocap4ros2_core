@@ -25,7 +25,7 @@ jobs:
       - name: build and test
         uses: ros-tooling/action-ros-ci@0.1.1
         with:
-          package-name: mocap4ros2_core
+          package-name: mocap_camera_composer mocap_control mocap_control_msgs mocap_imu_composer
           target-ros2-distro: foxy
           vcs-repo-file-url: /tmp/all.repos
           colcon-mixin-name: coverage-gcc
