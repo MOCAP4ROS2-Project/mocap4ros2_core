@@ -62,4 +62,5 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
+ament_export_libraries(${PROJECT_NAME})
 ament_package()
