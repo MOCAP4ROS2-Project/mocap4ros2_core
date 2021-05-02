@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string>
+#include <vector>
+
 #include "mocap_control_msgs/msg/control.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -37,47 +40,43 @@ ControllerNode::ControllerNode()
 void
 ControllerNode::control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg)
 {
-  if (msg->mocap_component == get_name()) {
-    return;
-  }
-
   switch (msg->control_type) {
     case mocap_control_msgs::msg::Control::ACK_START:
       {
-        auto elapsed = now() - msg->header.stamp;
+        auto elapsed = now() - msg->stamp;
 
         if (elapsed < 1ms) {
           RCLCPP_INFO(
             get_logger(),
-            "[%s] start elapsed = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else if (elapsed < 200ms) {
           RCLCPP_WARN(
             get_logger(),
-            "[%s] start elapsed = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else {
           RCLCPP_ERROR(
             get_logger(),
-            "[%s] start elapsed = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         }
       }
       break;
 
     case mocap_control_msgs::msg::Control::ACK_STOP:
       {
-        auto elapsed = now() - msg->header.stamp;
+        auto elapsed = now() - msg->stamp;
 
         if (elapsed < 1ms) {
           RCLCPP_INFO(
             get_logger(),
-            "[%s] stop elapsed = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] stop elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else if (elapsed < 200ms) {
           RCLCPP_WARN(
             get_logger(),
-            "[%s] stop = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] stop = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else {
           RCLCPP_ERROR(
             get_logger(),
-            "[%s] stop = %lf secs", msg->mocap_component.c_str(), elapsed.seconds());
+            "[%s] stop = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         }
       }
       break;
@@ -88,13 +87,16 @@ ControllerNode::control_callback(const mocap_control_msgs::msg::Control::SharedP
 }
 
 void
-ControllerNode::start_system()
+ControllerNode::start_system(
+  const std::string & capture_session_id,
+  const std::vector<std::string> & capture_systems)
 {
   mocap_control_msgs::msg::Control msg;
   msg.control_type = mocap_control_msgs::msg::Control::START;
-  msg.mocap_component = get_name();
-  msg.header.stamp = now();
-
+  msg.stamp = now();
+  msg.system_source = get_name();
+  msg.capture_session_id = capture_session_id;
+  msg.capture_systems = capture_systems;
   control_pub_->publish(msg);
 }
 
@@ -103,8 +105,8 @@ ControllerNode::stop_system()
 {
   mocap_control_msgs::msg::Control msg;
   msg.control_type = mocap_control_msgs::msg::Control::STOP;
-  msg.mocap_component = get_name();
-  msg.header.stamp = now();
+  msg.stamp = now();
+  msg.system_source = get_name();
 
   control_pub_->publish(msg);
 }

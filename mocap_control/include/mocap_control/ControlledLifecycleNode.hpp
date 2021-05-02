@@ -15,26 +15,25 @@
 #ifndef MOCAP_CONTROL__CONTROLLEDLIFECYCLENODE_HPP_
 #define MOCAP_CONTROL__CONTROLLEDLIFECYCLENODE_HPP_
 
+#include <string>
+
 #include "mocap_control_msgs/msg/control.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 namespace mocap_control
 {
-class ControlledLifecycleNode
+class ControlledLifecycleNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  ControlledLifecycleNode();
+  explicit ControlledLifecycleNode(const std::string & system_id);
 
 protected:
-  void init(rclcpp_lifecycle::LifecycleNode::SharedPtr node);
-  void control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg);
-
-  virtual void control_start();
-  virtual void control_stop();
+  virtual void control_start(const mocap_control_msgs::msg::Control::SharedPtr msg) {(void)msg;}
+  virtual void control_stop(const mocap_control_msgs::msg::Control::SharedPtr msg) {(void)msg;}
 
 private:
-  rclcpp_lifecycle::LifecycleNode::SharedPtr node_;
+  void control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg);
 
   rclcpp::Subscription<mocap_control_msgs::msg::Control>::SharedPtr control_sub_;
   rclcpp_lifecycle::LifecyclePublisher<mocap_control_msgs::msg::Control>::SharedPtr control_pub_;
