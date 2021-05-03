@@ -15,6 +15,9 @@
 #ifndef MOCAP_CONTROL__CONTROLLERNODE_HPP_
 #define MOCAP_CONTROL__CONTROLLERNODE_HPP_
 
+#include <vector>
+#include <string>
+
 #include "mocap_control_msgs/msg/control.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -26,7 +29,9 @@ class ControllerNode : public rclcpp::Node
 public:
   ControllerNode();
 
-  void start_system();
+  void start_system(
+    const std::string & capture_session_id,
+    const std::vector<std::string> & capture_systems);
   void stop_system();
 
 private:

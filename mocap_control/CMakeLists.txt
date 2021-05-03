@@ -30,17 +30,10 @@ set(dependencies
 include_directories(include)
 
 add_library(${PROJECT_NAME} SHARED
-  src/mocap_control/ControlledNode.cpp
   src/mocap_control/ControlledLifecycleNode.cpp
   src/mocap_control/ControllerNode.cpp
 )
 ament_target_dependencies(${PROJECT_NAME} ${dependencies})
-
-add_executable(start
-  src/start.cpp
-)
-ament_target_dependencies(start ${dependencies})
-target_link_libraries(start ${PROJECT_NAME})
 
 install(DIRECTORY include/
   DESTINATION include/
@@ -48,7 +41,6 @@ install(DIRECTORY include/
 
 install(TARGETS
   ${PROJECT_NAME}
-  start
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
