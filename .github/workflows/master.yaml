@@ -25,7 +25,7 @@ jobs:
         with:
           package-name: mocap_msgs
           target-ros2-distro: foxy
-          vcs-repo-file-url: ""
+          vcs-repo-file-url: https://raw.githubusercontent.com/MOCAP4ROS2-Project/mocap4ros2_core/master/mocap4ros2.repos
           colcon-mixin-name: coverage-gcc
           colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
       - uses: codecov/codecov-action@v1.0.15
