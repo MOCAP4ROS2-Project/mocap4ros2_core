@@ -21,7 +21,7 @@ jobs:
         with:
           required-ros-distributions: foxy
       - name: build and test
-        uses: lbajo/action-ros-ci@0.1.1
+        uses: ros-tooling/action-ros-ci@0.1.1
         with:
           package-name: mocap_msgs
           target-ros2-distro: foxy
