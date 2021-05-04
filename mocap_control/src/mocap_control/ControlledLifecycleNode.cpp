@@ -15,6 +15,7 @@
 #include <string>
 
 #include "mocap_control_msgs/msg/control.hpp"
+#include "mocap_control_msgs/msg/mocap_info.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
 #include "lifecycle_msgs/msg/transition.hpp"
 
@@ -31,13 +32,61 @@ using std::placeholders::_1;
 ControlledLifecycleNode::ControlledLifecycleNode(const std::string & system_id)
 : LifecycleNode(system_id)
 {
-  control_sub_ = create_subscription<mocap_control_msgs::msg::Control>(
-    "/mocap_control", rclcpp::QoS(100).reliable(),
+  mocap_control_sub_ = create_subscription<mocap_control_msgs::msg::Control>(
+    "mocap_control", rclcpp::QoS(100).reliable(),
     std::bind(&ControlledLifecycleNode::control_callback, this, _1));
 
-  control_pub_ = create_publisher<mocap_control_msgs::msg::Control>(
-    "/mocap_control", rclcpp::QoS(100).reliable());
-  control_pub_->on_activate();
+  mocap_control_pub_ = create_publisher<mocap_control_msgs::msg::Control>(
+    "mocap_control", rclcpp::QoS(100).reliable());
+
+  mocap_info_pub_ = create_publisher<mocap_control_msgs::msg::MocapInfo>(
+    "mocap_environment", rclcpp::QoS(1000).reliable().transient_local().keep_all());
+
+  mocap_control_pub_->on_activate();
+  mocap_info_pub_->on_activate();
+}
+
+using CallbackReturnT =
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+
+CallbackReturnT
+ControlledLifecycleNode::on_configure(const rclcpp_lifecycle::State & state)
+{
+  (void)state;
+  mocap_control_msgs::msg::MocapInfo msg;
+  msg.system_source = get_name();
+  msg.topics.assign(topics_.begin(), topics_.end());
+
+  mocap_info_pub_->publish(msg);
+
+  return CallbackReturnT::SUCCESS;
+}
+CallbackReturnT
+ControlledLifecycleNode::on_activate(const rclcpp_lifecycle::State & state)
+{
+  (void)state;
+  return CallbackReturnT::SUCCESS;
+}
+
+CallbackReturnT
+ControlledLifecycleNode::on_deactivate(const rclcpp_lifecycle::State & state)
+{
+  (void)state;
+  return CallbackReturnT::SUCCESS;
+}
+
+CallbackReturnT
+ControlledLifecycleNode::on_shutdown(const rclcpp_lifecycle::State & state)
+{
+  (void)state;
+  return CallbackReturnT::SUCCESS;
+}
+
+CallbackReturnT
+ControlledLifecycleNode::on_cleanup(const rclcpp_lifecycle::State & state)
+{
+  (void)state;
+  return CallbackReturnT::SUCCESS;
 }
 
 
@@ -59,7 +108,7 @@ ControlledLifecycleNode::control_callback(const mocap_control_msgs::msg::Control
         msg_reply.control_type = mocap_control_msgs::msg::Control::ACK_START;
         msg_reply.stamp = now();
         msg_reply.system_source = get_name();
-        control_pub_->publish(msg_reply);
+        mocap_control_pub_->publish(msg_reply);
 
         control_start(msg);
       } else {
@@ -76,7 +125,7 @@ ControlledLifecycleNode::control_callback(const mocap_control_msgs::msg::Control
         msg_reply.control_type = mocap_control_msgs::msg::Control::ACK_STOP;
         msg_reply.stamp = now();
         msg_reply.system_source = get_name();
-        control_pub_->publish(msg_reply);
+        mocap_control_pub_->publish(msg_reply);
 
         control_stop(msg);
       } else {

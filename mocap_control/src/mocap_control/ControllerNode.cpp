@@ -30,11 +30,11 @@ ControllerNode::ControllerNode()
 : Node("mocap_controller")
 {
   control_sub_ = create_subscription<mocap_control_msgs::msg::Control>(
-    "/mocap_control", rclcpp::QoS(100).reliable(),
+    "mocap_control", rclcpp::QoS(100).reliable(),
     std::bind(&ControllerNode::control_callback, this, _1));
 
   control_pub_ = create_publisher<mocap_control_msgs::msg::Control>(
-    "/mocap_control", rclcpp::QoS(100).reliable());
+    "mocap_control", rclcpp::QoS(100).reliable());
 }
 
 void

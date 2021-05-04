@@ -9,6 +9,7 @@ find_package(geometry_msgs REQUIRED)
 
 set(msg_files
   "msg/Control.msg"
+  "msg/MocapInfo.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}

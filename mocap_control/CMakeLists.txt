@@ -51,6 +51,9 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(std_msgs REQUIRED)
+  set(dependencies ${dependencies} std_msgs)
+
   add_subdirectory(test)
 endif()
 
