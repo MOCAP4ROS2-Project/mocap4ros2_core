@@ -4,7 +4,7 @@ int8 STOP=2
 int8 ACK_STOP=3
 
 int8 control_type
-builtin_interfaces/Time stamp
+time stamp
 
 string system_source
 string capture_session_id

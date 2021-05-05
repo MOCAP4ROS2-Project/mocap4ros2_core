@@ -14,124 +14,128 @@
 
 #include <string>
 
-#include "mocap_control_msgs/msg/control.hpp"
-#include "mocap_control_msgs/msg/mocap_info.hpp"
-#include "lifecycle_msgs/msg/state.hpp"
-#include "lifecycle_msgs/msg/transition.hpp"
+#include "mocap_control_msgs/Control.h"
+#include "mocap_control_msgs/MocapInfo.h"
 
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "ros/ros.h"
 
 #include "mocap_control/ControlledLifecycleNode.hpp"
 
 namespace mocap_control
 {
 
-using std::placeholders::_1;
-
 ControlledLifecycleNode::ControlledLifecycleNode(const std::string & system_id)
-: LifecycleNode(system_id)
+: nh_(), system_id_(system_id), state_(UNCONFIGURED)
 {
-  mocap_control_sub_ = create_subscription<mocap_control_msgs::msg::Control>(
-    "mocap_control", rclcpp::QoS(100).reliable(),
-    std::bind(&ControlledLifecycleNode::control_callback, this, _1));
-
-  mocap_control_pub_ = create_publisher<mocap_control_msgs::msg::Control>(
-    "mocap_control", rclcpp::QoS(100).reliable());
-
-  mocap_info_pub_ = create_publisher<mocap_control_msgs::msg::MocapInfo>(
-    "mocap_environment", rclcpp::QoS(1000).reliable().transient_local().keep_all());
-
-  mocap_control_pub_->on_activate();
-  mocap_info_pub_->on_activate();
+  mocap_control_sub_ = nh_.subscribe("mocap_control", 1, &ControlledLifecycleNode::control_callback, this);
+  mocap_control_pub_ = nh_.advertise<mocap_control_msgs::Control>("mocap_control", 100);
+  mocap_info_pub_ = nh_.advertise<mocap_control_msgs::MocapInfo>("mocap_environment", 100, true);
 }
 
-using CallbackReturnT =
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
-
-CallbackReturnT
-ControlledLifecycleNode::on_configure(const rclcpp_lifecycle::State & state)
+bool
+ControlledLifecycleNode::trigger_transition(Transition transition)
 {
-  (void)state;
-  mocap_control_msgs::msg::MocapInfo msg;
-  msg.system_source = get_name();
+  switch (transition) {
+    case CONFIGURE:
+      if (state_ == UNCONFIGURED) {
+        if (on_configure()) {
+          state_ = INACTIVE;
+        }
+      } else {
+        ROS_ERROR("CONFIGURE transition from state %d", state_);
+        return false;
+      }
+      break;
+    case ACTIVATE:
+      if (state_ == INACTIVE) {
+        if (on_activate()) {
+          state_ = ACTIVE;
+        }
+      } else {
+        ROS_ERROR("ACTIVATE transition from state %d", state_);
+        return false;
+      }
+      break;
+    case DEACTIVATE:
+      if (state_ == ACTIVE) {
+        if (on_deactivate()) {
+          state_ = INACTIVE;
+        }
+      } else {
+        ROS_ERROR("DEACTIVATE transition from state %d", state_);
+        return false;
+      }
+      break;
+  }
+
+  return true;
+}
+
+bool
+ControlledLifecycleNode::on_configure()
+{
+  mocap_control_msgs::MocapInfo msg;
+  msg.system_source = ros::this_node::getName();
   msg.topics.assign(topics_.begin(), topics_.end());
 
-  mocap_info_pub_->publish(msg);
+  mocap_info_pub_.publish(msg);
 
-  return CallbackReturnT::SUCCESS;
-}
-CallbackReturnT
-ControlledLifecycleNode::on_activate(const rclcpp_lifecycle::State & state)
-{
-  (void)state;
-  return CallbackReturnT::SUCCESS;
+  return true;
 }
 
-CallbackReturnT
-ControlledLifecycleNode::on_deactivate(const rclcpp_lifecycle::State & state)
+bool
+ControlledLifecycleNode::on_activate()
 {
-  (void)state;
-  return CallbackReturnT::SUCCESS;
+  return true;
 }
 
-CallbackReturnT
-ControlledLifecycleNode::on_shutdown(const rclcpp_lifecycle::State & state)
+bool
+ControlledLifecycleNode::on_deactivate()
 {
-  (void)state;
-  return CallbackReturnT::SUCCESS;
-}
-
-CallbackReturnT
-ControlledLifecycleNode::on_cleanup(const rclcpp_lifecycle::State & state)
-{
-  (void)state;
-  return CallbackReturnT::SUCCESS;
+  return true;
 }
 
 
 void
-ControlledLifecycleNode::control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg)
+ControlledLifecycleNode::control_callback(const mocap_control_msgs::Control::ConstPtr & msg)
 {
   if (!msg->capture_systems.empty() &&
-    std::find(msg->capture_systems.begin(), msg->capture_systems.end(), get_name()) ==
+    std::find(msg->capture_systems.begin(), msg->capture_systems.end(), ros::this_node::getName()) ==
     msg->capture_systems.end())
   {
     return;
   }
 
   switch (msg->control_type) {
-    case mocap_control_msgs::msg::Control::START:
-      if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
-        trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
-        mocap_control_msgs::msg::Control msg_reply;
-        msg_reply.control_type = mocap_control_msgs::msg::Control::ACK_START;
-        msg_reply.stamp = now();
-        msg_reply.system_source = get_name();
-        mocap_control_pub_->publish(msg_reply);
+    case mocap_control_msgs::Control::START:
+      if (state_ == INACTIVE) {
+        trigger_transition(ACTIVATE);
+        mocap_control_msgs::Control msg_reply;
+        msg_reply.control_type = mocap_control_msgs::Control::ACK_START;
+        msg_reply.stamp = ros::Time::now();
+        msg_reply.system_source = ros::this_node::getName();
+        mocap_control_pub_.publish(msg_reply);
 
         control_start(msg);
       } else {
-        RCLCPP_WARN_STREAM(
-          get_logger(),
-          "Activation requested in state " << get_current_state().label());
+        ROS_WARN_STREAM(
+          "Activation requested in state " << state_);
       }
       break;
 
-    case mocap_control_msgs::msg::Control::STOP:
-      if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE) {
-        trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_DEACTIVATE);
-        mocap_control_msgs::msg::Control msg_reply;
-        msg_reply.control_type = mocap_control_msgs::msg::Control::ACK_STOP;
-        msg_reply.stamp = now();
-        msg_reply.system_source = get_name();
-        mocap_control_pub_->publish(msg_reply);
+    case mocap_control_msgs::Control::STOP:
+      if (state_ == ACTIVE) {
+        trigger_transition(DEACTIVATE);
+        mocap_control_msgs::Control msg_reply;
+        msg_reply.control_type = mocap_control_msgs::Control::ACK_STOP;
+        msg_reply.stamp = ros::Time::now();
+        msg_reply.system_source =ros::this_node::getName();
+        mocap_control_pub_.publish(msg_reply);
 
         control_stop(msg);
       } else {
-        RCLCPP_WARN_STREAM(
-          get_logger(),
-          "Deactivation requested in state " << get_current_state().label());
+        ROS_WARN_STREAM(
+          "Deactivation requested in state " << state_);
       }
       break;
 

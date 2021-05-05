@@ -19,63 +19,55 @@
 #include <set>
 #include <memory>
 
-#include "mocap_control_msgs/msg/control.hpp"
-#include "mocap_control_msgs/msg/mocap_info.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "mocap_control_msgs/Control.h"
+#include "mocap_control_msgs/MocapInfo.h"
+#include "ros/ros.h"
 
 namespace mocap_control
 {
-class ControlledLifecycleNode : public rclcpp_lifecycle::LifecycleNode
+
+enum State {UNCONFIGURED, INACTIVE, ACTIVE};
+enum Transition {CONFIGURE, ACTIVATE, DEACTIVATE};
+
+class ControlledLifecycleNode
 {
 public:
   explicit ControlledLifecycleNode(const std::string & system_id);
 
+  bool trigger_transition(Transition transition);
+
 protected:
-  template<typename MessageT, typename AllocatorT = std::allocator<void>>
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<MessageT, AllocatorT>>
-  create_publisher(
-    const std::string & topic_name,
-    const rclcpp::QoS & qos,
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = (
-      rclcpp_lifecycle::create_default_publisher_options<AllocatorT>()
-    )
-  )
+
+  template<typename MessageT>
+  ros::Publisher
+  create_publisher(const std::string & topic_name, int queue, bool latched = false)
   {
     if (topic_name != "mocap_control" && topic_name != "mocap_environment") {
       topics_.insert(topic_name);
     }
 
-    using PublisherT = rclcpp_lifecycle::LifecyclePublisher<MessageT, AllocatorT>;
-    return rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
-      *this,
-      topic_name,
-      qos,
-      options);
+    return nh_.advertise<MessageT>(topic_name, queue, latched);
   }
 
-  using CallbackReturnT =
-    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+  State state_;
+  std::string system_id_;
 
-  CallbackReturnT on_configure(const rclcpp_lifecycle::State & state);
-  CallbackReturnT on_activate(const rclcpp_lifecycle::State & state);
-  CallbackReturnT on_deactivate(const rclcpp_lifecycle::State & state);
-  CallbackReturnT on_shutdown(const rclcpp_lifecycle::State & state);
-  CallbackReturnT on_cleanup(const rclcpp_lifecycle::State & state);
+  virtual bool on_configure();
+  virtual bool on_activate();
+  virtual bool on_deactivate();
 
-  virtual void control_start(const mocap_control_msgs::msg::Control::SharedPtr msg) {(void)msg;}
-  virtual void control_stop(const mocap_control_msgs::msg::Control::SharedPtr msg) {(void)msg;}
+  virtual void control_start(const mocap_control_msgs::Control::ConstPtr & msg) {(void)msg;}
+  virtual void control_stop(const mocap_control_msgs::Control::ConstPtr & msg) {(void)msg;}
 
   std::set<std::string> topics_;
 
 private:
-  void control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg);
+  ros::NodeHandle nh_;
+  ros::Subscriber mocap_control_sub_;
+  ros::Publisher mocap_control_pub_;
+  ros::Publisher mocap_info_pub_;
 
-  rclcpp::Subscription<mocap_control_msgs::msg::Control>::SharedPtr mocap_control_sub_;
-  rclcpp_lifecycle::LifecyclePublisher<mocap_control_msgs::msg::Control>::SharedPtr
-    mocap_control_pub_;
-  rclcpp_lifecycle::LifecyclePublisher<mocap_control_msgs::msg::MocapInfo>::SharedPtr
-    mocap_info_pub_;
+  void control_callback(const mocap_control_msgs::Control::ConstPtr & msg);
 };
 
 }  // namespace mocap_control
