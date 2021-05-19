@@ -70,8 +70,6 @@ virtual void control_stop(const mocap_control_msgs::msg::Control::SharedPtr msg)
 
 ---
 ### MOCAP4ROS2
-This project provides support for ROS2 integration with Vicon cameras (MOCAP systems based on vision) and Technaid TechMCS IMUs (MOCAP systems based on motion sensors).
-
 The project [MOCAP4ROS2](https://rosin-project.eu/ftp/mocap4ros2) is funded as a Focused Technical Project by [ROSIN](http://rosin-project.eu/).
 
 
