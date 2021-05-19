@@ -11,8 +11,7 @@ In the network there is a control node that triggers the start or stop of each o
 ![mocap_contro_arch](https://user-images.githubusercontent.com/3810011/118769923-fa52ff00-b880-11eb-8eb2-443dc5121a2b.png)
 
 This protocol uses two types of messages: 
-* `mocap_controls_msgs/msg/Control`: Uses the topic `![mocap4ros_protocol](https://user-images.githubusercontent.com/3810011/118773377-1062be80-b885-11eb-9507-669d21dc26d2.png)![mocap4ros_protocol](https://user-images.githubusercontent.com/3810011/118773407-16f13600-b885-11eb-8361-3a160feeafc7.png)
-` (QoS reliable), and controls the startup and shutdown of systems
+* `mocap_controls_msgs/msg/Control`: Uses the topic `/mocap_control` (QoS reliable), and controls the startup and shutdown of systems
 
 ```
 int8 START=0
