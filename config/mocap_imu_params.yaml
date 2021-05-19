@@ -1,8 +1,0 @@
-mocap_imu_composer:
-  ros__parameters:
-    imu_num: 2
-    imu_0: ["imu0", 0 ,0, 0]
-    imu_1: ["imu1", 1 ,0, 0]
-    imu_array: [imu_0, imu_1]
-
-
