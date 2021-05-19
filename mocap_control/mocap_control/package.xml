@@ -3,9 +3,11 @@
 <package format="3">
   <name>mocap_control</name>
   <version>0.0.1</version>
-  <description>Control tools for MOCAP4ROS2 Project</description>
-  <maintainer email="fmrico@gmail.com">fmrico</maintainer>
-  <license>Apache2</license>
+  <description>Control protocol for MOCAP4ROS2 Project</description>
+
+  <author email="fmrico@gmail.com">Francisco Martín</author>
+  <maintainer email="fmrico@gmail.com">Francisco Martín</maintainer>
+  <license>Apache License, Version 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
