@@ -26,12 +26,16 @@ namespace mocap_control
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
-ControllerNode::ControllerNode()
-: Node("mocap_controller")
+ControllerNode::ControllerNode(
+  std::function<void(const mocap_control_msgs::msg::Control::SharedPtr msg)> callback)
+: Node("mocap_controller"), callback_(callback)
 {
   control_sub_ = create_subscription<mocap_control_msgs::msg::Control>(
     "mocap_control", rclcpp::QoS(100).reliable(),
-    std::bind(&ControllerNode::control_callback, this, _1));
+    [this](mocap_control_msgs::msg::Control::SharedPtr msg) {
+      this->control_callback(msg);
+      this->callback_(msg);
+    });
 
   control_pub_ = create_publisher<mocap_control_msgs::msg::Control>(
     "mocap_control", rclcpp::QoS(100).reliable());
@@ -46,15 +50,15 @@ ControllerNode::control_callback(const mocap_control_msgs::msg::Control::SharedP
         auto elapsed = now() - msg->stamp;
 
         if (elapsed < 1ms) {
-          RCLCPP_INFO(
+          RCLCPP_DEBUG(
             get_logger(),
             "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else if (elapsed < 200ms) {
-          RCLCPP_WARN(
+          RCLCPP_DEBUG(
             get_logger(),
             "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else {
-          RCLCPP_ERROR(
+          RCLCPP_DEBUG(
             get_logger(),
             "[%s] start elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         }
@@ -66,17 +70,17 @@ ControllerNode::control_callback(const mocap_control_msgs::msg::Control::SharedP
         auto elapsed = now() - msg->stamp;
 
         if (elapsed < 1ms) {
-          RCLCPP_INFO(
+          RCLCPP_DEBUG(
             get_logger(),
             "[%s] stop elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else if (elapsed < 200ms) {
-          RCLCPP_WARN(
+          RCLCPP_DEBUG(
             get_logger(),
-            "[%s] stop = %lf secs", msg->system_source.c_str(), elapsed.seconds());
+            "[%s] stop elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         } else {
-          RCLCPP_ERROR(
+          RCLCPP_DEBUG(
             get_logger(),
-            "[%s] stop = %lf secs", msg->system_source.c_str(), elapsed.seconds());
+            "[%s] stop elapsed = %lf secs", msg->system_source.c_str(), elapsed.seconds());
         }
       }
       break;

@@ -128,10 +128,6 @@ ControlledLifecycleNode::control_callback(const mocap_control_msgs::msg::Control
         mocap_control_pub_->publish(msg_reply);
 
         control_stop(msg);
-      } else {
-        RCLCPP_WARN_STREAM(
-          get_logger(),
-          "Deactivation requested in state " << get_current_state().label());
       }
       break;
 

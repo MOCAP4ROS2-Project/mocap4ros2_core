@@ -92,7 +92,7 @@ TEST(Controltests, test_sync)
   node_2->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   auto start = control_node->now();
-  while ((control_node->now() - start).seconds() < 0.1) {
+  while ((control_node->now() - start).seconds() < 0.2) {
     executor.spin_some();
   }
 
