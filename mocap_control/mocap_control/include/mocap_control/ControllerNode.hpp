@@ -27,7 +27,10 @@ namespace mocap_control
 class ControllerNode : public rclcpp::Node
 {
 public:
-  ControllerNode();
+  ControllerNode(
+    std::function<void(
+      const mocap_control_msgs::msg::Control::SharedPtr msg)> callback =
+    [](const mocap_control_msgs::msg::Control::SharedPtr) {});  // NOLINT(runtime/explicit)
 
   void start_system(
     const std::string & capture_session_id,
@@ -36,6 +39,8 @@ public:
 
 private:
   void control_callback(const mocap_control_msgs::msg::Control::SharedPtr msg);
+
+  std::function<void(const mocap_control_msgs::msg::Control::SharedPtr msg)> callback_;
 
   rclcpp::Subscription<mocap_control_msgs::msg::Control>::SharedPtr control_sub_;
   rclcpp::Publisher<mocap_control_msgs::msg::Control>::SharedPtr control_pub_;
