@@ -29,7 +29,7 @@ string[] capture_systems
 
 
 
-* `mocap_controls_msgs/msg/MocapInfo`: Uses the topic `/mocap_environment` (QoS reliable + transient_local) and each system publishes information about it, including which topics it uses to publish the information it produces.
+* `mocap_controls_msgs/msg/MocapInfo`: Uses the topic `/mocap_environment` (QoS reliable + transient_local) and each system publishes information about it, including which topics it uses to publish the information it produces. It is necessary to publish this info if you want to use the [RQT Mocap Control](https://github.com/MOCAP4ROS2-Project/mocap4ros2_applications/tree/main/rqt_mocap_control).
 
 ```
 int8 ROS2=0
